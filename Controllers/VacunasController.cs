@@ -16,25 +16,35 @@ namespace PetCloudApi.Controllers
             _context = context;
         }
 
-        // GET: api/Vacunas (Obtener todas las vacunas con datos extra)
+        // GET: api/Vacunas
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Vacuna>>> GetVacunas()
         {
-            // Usamos .Include() para traer los datos reales de la mascota y del veterinario, no solo el número de ID
-            return await _context.Vacunas
-                                 .Include(v => v.Mascota)
-                                 .Include(v => v.Veterinario)
-                                 .ToListAsync();
+            return await _context.Vacunas.ToListAsync();
         }
 
-        // POST: api/Vacunas (Simula el escaneo del QR y la carga de la vacuna)
+        // GET: api/Vacunas/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Vacuna>> GetVacuna(int id)
+        {
+            var vacuna = await _context.Vacunas.FindAsync(id);
+
+            if (vacuna == null)
+            {
+                return NotFound(new { mensaje = "No existe una vacuna con el ID indicado." });
+            }
+
+            return vacuna;
+        }
+
+        // POST: api/Vacunas
         [HttpPost]
         public async Task<ActionResult<Vacuna>> PostVacuna(Vacuna vacuna)
         {
             _context.Vacunas.Add(vacuna);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetVacunas), new { id = vacuna.Id }, vacuna);
+            return CreatedAtAction(nameof(GetVacuna), new { id = vacuna.Id }, vacuna);
         }
     }
 }

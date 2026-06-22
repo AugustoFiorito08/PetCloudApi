@@ -12,8 +12,8 @@ using PetCloudApi.Data;
 namespace PetCloudApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260622161007_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260622215936_EstructuraOficialPDF")]
+    partial class EstructuraOficialPDF
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,6 +61,41 @@ namespace PetCloudApi.Migrations
                     b.ToTable("Mascotas");
                 });
 
+            modelBuilder.Entity("PetCloudApi.Models.RegistroSanitario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("FechaAplicacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MascotaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Observaciones")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VacunaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Veterinario")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MascotaId");
+
+                    b.HasIndex("VacunaId");
+
+                    b.ToTable("RegistrosSanitarios");
+                });
+
             modelBuilder.Entity("PetCloudApi.Models.Usuario", b =>
                 {
                     b.Property<int>("Id")
@@ -91,6 +126,29 @@ namespace PetCloudApi.Migrations
                     b.ToTable("Usuarios");
                 });
 
+            modelBuilder.Entity("PetCloudApi.Models.Vacuna", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Vacunas");
+                });
+
             modelBuilder.Entity("PetCloudApi.Models.Mascota", b =>
                 {
                     b.HasOne("PetCloudApi.Models.Usuario", "Dueno")
@@ -100,6 +158,25 @@ namespace PetCloudApi.Migrations
                         .IsRequired();
 
                     b.Navigation("Dueno");
+                });
+
+            modelBuilder.Entity("PetCloudApi.Models.RegistroSanitario", b =>
+                {
+                    b.HasOne("PetCloudApi.Models.Mascota", "Mascota")
+                        .WithMany()
+                        .HasForeignKey("MascotaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PetCloudApi.Models.Vacuna", "Vacuna")
+                        .WithMany()
+                        .HasForeignKey("VacunaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Mascota");
+
+                    b.Navigation("Vacuna");
                 });
 #pragma warning restore 612, 618
         }

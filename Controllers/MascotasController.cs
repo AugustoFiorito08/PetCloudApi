@@ -35,39 +35,6 @@ namespace PetCloudApi.Controllers
             return CreatedAtAction(nameof(GetMascotas), new { id = mascota.Id }, mascota);
         }
 
-        // GET: api/Mascotas/1/Libreta
-        [HttpGet("{id}/Libreta")]
-        public async Task<IActionResult> GetLibretaSanitaria(int id)
-        {
-            // 1. Buscamos a la mascota y traemos los datos de su dueño
-            var mascota = await _context.Mascotas
-                .Include(m => m.Dueno)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (mascota == null)
-            {
-                return NotFound("No se encontró la mascota en el sistema.");
-            }
-
-            // 2. Buscamos todas las vacunas de esta mascota específica
-            var vacunas = await _context.Vacunas
-                .Include(v => v.Veterinario)
-                .Where(v => v.MascotaId == id)
-                .Select(v => new {
-                    v.NombreVacuna,
-                    v.FechaAplicacion,
-                    VeterinarioQueAplico = v.Veterinario.Nombre // Extraemos solo el nombre del veterinario
-                })
-                .ToListAsync();
-
-            // 3. Devolvemos la Libreta Digital unificada
-            return Ok(new {
-                Mascota = mascota.Nombre,
-                Especie = mascota.Especie,
-                Raza = mascota.Raza,
-                Dueno = mascota.Dueno.Nombre,
-                HistorialDeVacunas = vacunas
-            });
-        }
+        
     }
 }

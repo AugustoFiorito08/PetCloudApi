@@ -9,22 +9,20 @@ namespace PetCloudApi.Data
         {
         }
 
-        // Aquí definimos cuáles modelos se convertirán en tablas en la BD
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Mascota> Mascotas { get; set; }
-
-        //tabla de Vacunas
         public DbSet<Vacuna> Vacunas { get; set; }
+        public DbSet<RegistroSanitario> RegistrosSanitarios { get; set; } // ¡Nueva tabla!
+        // ¡Nueva tabla de Recordatorios!
+        public DbSet<Recordatorio> Recordatorios { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<Vacuna>()
-                .HasOne(v => v.Veterinario)
-                .WithMany()
-                .HasForeignKey(v => v.VeterinarioId)
-                .OnDelete(DeleteBehavior.Restrict); // Esto apaga el borrado en cascada para el veterinario
+            
+            // Ya no necesitamos la regla compleja de borrado porque simplificamos
+            // el veterinario a un simple texto (string) en el registro sanitario
+            // según las especificaciones de tu PDF.
         }
     }
 }
